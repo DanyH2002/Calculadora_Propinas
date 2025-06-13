@@ -4,7 +4,7 @@ export type MenuItem = {
     price: number;
 }
 
-export type OrderItem = MenuItem & { quantity: number };
+export type OrderItem = MenuItem & { quantity: number, tip?: number };
 
 export type OrderId = Pick<MenuItem, 'id'>;
 
@@ -19,5 +19,9 @@ export type CalculadoraProps = {
     removeFromCard: (id: OrderId["id"]) => void;
     clearCard: () => void;
     subTotal: number;
-    total: (propina: number) => number;
+    tipAmount: number;
+    total: number;
+    tip: number;
+    dispatchTip: React.Dispatch<number>; // Permite actualizar el estado de la propina, segun el porcentaje seleccionado
+    restartToCard: (id: OrderId["id"]) => void;
 }

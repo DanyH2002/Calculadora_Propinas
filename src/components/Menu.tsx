@@ -13,7 +13,7 @@ function Menu({ menu, addToCard }: MenuProps) {
                             <p className="text-gray-700">Precio: ${item.price.toFixed(2)}</p>
                             <button
                                 onClick={() => addToCard(item)}
-                                className="bg-gray-600 text-white rounded w-5 h-9 hover:bg-gray-300 transition-colors duration-300"
+                                className="bg-gray-400 text-white rounded w-5 h-9 hover:bg-gray-300 transition-colors duration-300"
                             >+
                             </button>
                         </div>

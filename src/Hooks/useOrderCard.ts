@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useReducer } from 'react';
 import { menuItems } from '../data/db';
 import type { MenuItem, OrderItem, OrderId } from '../types/types';
 
@@ -16,14 +16,10 @@ export const useOrderCard = () => {
     }, [card]);
 
     function addToCard(item: MenuItem) {
-        // Funcion para agregar un item al carrito
-        // Si el item ya existe en el carrito, incrementa la cantidad
-        // Si no existe, lo agrega con cantidad 1
         const existItem = card.findIndex((m) => m.id === item.id);
         if (existItem >= 0) {
             setCard((prevCard) => {
                 const newCard = [...prevCard];
-                newCard[existItem].quantity +1;
                 newCard[existItem] = {
                     ...newCard[existItem],
                     quantity: newCard[existItem].quantity + 1
@@ -34,6 +30,20 @@ export const useOrderCard = () => {
             const newItem: OrderItem = { ...item, quantity: 1 };
             setCard((prevCard) => [...prevCard, newItem]);
         }
+    }
+
+    function restartToCard(id:OrderId["id"]) {
+        const item = card.map((m) => {
+            if( m.id === id && m.quantity > 1){
+                return {
+                    ...m,
+                    quantity: m.quantity - 1
+                };
+            } else{
+                return m;
+            }
+        });
+        setCard(item);
     }
 
     const isEmpty = useMemo(() => card.length === 0, [card])
@@ -49,9 +59,21 @@ export const useOrderCard = () => {
 
     const subTotal = useMemo(() => card.reduce((acc, item) => acc + (item.price * item.quantity), 0), [card]);
 
-    function total(propina: number) {
-        return subTotal + (subTotal * propina / 100);
+    function tipReducer(state: number, action: number) {
+        switch (action) {
+            case 10: return action;
+            case 20: return action;
+            case 50: return action;
+            default:
+                return state;
+        }
     }
+    
+    const [tip, dispatchTip] = useReducer(tipReducer, 0); // tipDispatch es quien actualiza la propina
+
+    const tipAmount = useMemo(() => subTotal * (tip / 100), [subTotal, tip]);
+
+    const total = useMemo(() => subTotal + tipAmount, [subTotal, tipAmount]);
 
     return {
         menu,
@@ -60,8 +82,12 @@ export const useOrderCard = () => {
         addToCard,
         isEmpty,
         removeFromCard,
+        restartToCard,
         clearCard,
         subTotal,
-        total
+        tipAmount,
+        total,
+        tip,
+        dispatchTip
     }
 }
